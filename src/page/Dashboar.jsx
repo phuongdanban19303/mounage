@@ -5,6 +5,7 @@ import Header from "../component/Header";
 import Navbarmenu from "../component/Navbar";
 import ListOderprovider, { ListOderctx } from "../context/ListOderContext";
 import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
+import TopProductChart from "../component/TopPrdchart";
 ///
 const Displaychart = () => {
   const { orders } = useContext(ListOderctx);
@@ -25,7 +26,7 @@ const Displaychart = () => {
   };
   // tính doanh thu theo fitelfitel
 
-  const processdatatotall = (orders, filter) => {
+  const processdatatotall = (orders, filter,Products) => {
     const revenueData = {};
     orders.forEach((item) => {
       let key;
@@ -39,7 +40,7 @@ const Displaychart = () => {
       if (!revenueData[key]) {
         revenueData[key] = 0;
       }
-      revenueData[key] += revenue;
+      revenueData[key] += revenue;            
     });
     //
     const chartData = [
@@ -131,6 +132,9 @@ const Dashboar = () => {
             </div>
             <div>
               <Displaychart />
+            </div>
+            <div>
+              <TopProductChart/>
             </div>
           </div>
         </div>

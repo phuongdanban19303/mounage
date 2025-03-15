@@ -8,12 +8,10 @@ import { getApioder, postApioder } from "../funtion/api";
 import ListOderprovider, { ListOderctx } from "../context/ListOderContext";
 import { Listprdctx } from "../context/ListprdContext";
 import { IoEye } from "react-icons/io5";
+import { AuthContext } from "../context/AuthContext";
 
 // trường tìm kiếm sản phẩm
 const Inputfind = () => {
-  const { Openpop } = useContext(Popctxoder);
-
-  
   return (
     <div className="flex h-[44px] justify-around">
       <input
@@ -54,9 +52,9 @@ const Btnadd = () => {
 
 // Render đơn hàng
 const Renderoder = ({Products}) => {
-
-  const {Opendetail}=useContext(Popctxoder)
+  const {Opendetail, Openpop, OpendeleteOrder} = useContext(Popctxoder);
   const { orders } = useContext(ListOderctx);
+
   // Hàm display đơn hàng
   const disPlayorders = () => {
     return orders?.map((odr) => {
@@ -94,7 +92,9 @@ const Renderoder = ({Products}) => {
               <p>{date}</p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <FaPen /> <MdDelete color="red" /> <IoEye onClick={()=>Opendetail(odr?._id)} color="blue"/>
+              <FaPen onClick={() => Openpop(odr)} /> 
+              <MdDelete onClick={() => OpendeleteOrder(odr?._id)} color="red" /> 
+              <IoEye onClick={()=>Opendetail(odr?._id)} color="blue"/>
             </div>
           </>
         </div>
@@ -105,7 +105,7 @@ const Renderoder = ({Products}) => {
     <div className="">
       <div className="grid grid-cols-[90px_2fr_140px_1fr_120px_1fr_2fr_1fr_100px] gap-2.5 gap-y-2 py-2.5 bg-[#E5E7EB] rounded-sm font-bold">
         <div className="col-span-1 pl-1.5">
-          <p>Mã đơn </p>
+          <h1>Mã đơn </h1>
         </div>
         <div>
           <p className="col-span-2">Tên sản phẩm</p>
@@ -132,14 +132,16 @@ const Renderoder = ({Products}) => {
           <p></p>
         </div>
       </div>
-      {/* <div className="grid mt-2.5  grid-cols-[90px_2fr_1fr_1fr_90px_1fr_1fr_2fr_1fr_60px] gap-2.5 gap-y-3"> */}
       {disPlayorders()}
-      {/* </div> */}
     </div>
   );
 };
+
 const Orders = () => {
   const{Products}=useContext(Listprdctx)
+  const { isAuthenticated } = useContext(AuthContext);
+ console.log(isAuthenticated);
+ 
   return (
     <ListOderprovider>
       <Popprovideroder>

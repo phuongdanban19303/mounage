@@ -1,14 +1,12 @@
 import React, { useContext } from "react";
-import Navbarmenu from "../component/Navbar";
-import Header from "../component/Header";
-import { PiPackageThin } from "react-icons/pi"; // sản phẩm
-import { ListPrd } from "../untils/const";
-import anhmau from "../assets/logo2.png";
 import { FaPen } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import Popprovideroder, { Popctxoder } from "../context/PopupContext";
-import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
+import { PiPackageThin } from "react-icons/pi"; // sản phẩm
+import Header from "../component/Header";
+import Navbarmenu from "../component/Navbar";
 import ListOderprovider from "../context/ListOderContext";
+import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
+import Popprovideroder, { Popctxoder } from "../context/PopupContext";
 
 // trường tìm kiếm sản phẩm
 const Inputfind = () => {

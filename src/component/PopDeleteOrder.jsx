@@ -1,36 +1,28 @@
 import React, { useContext } from "react";
-import { DeleteApiproduct } from "../funtion/api";
-import { Listprdctx } from "../context/ListprdContext";
+import { deleteApiorder } from "../funtion/api";
 import { ListOderctx } from "../context/ListOderContext";
 
-const PopDeleteprd = ({ Ispopdelete, Closedelete }) => {
-  const { setcheck } = useContext(Listprdctx);
-  const { orders } = useContext(ListOderctx);
-  console.log(orders);
-  const findoder = orders?.find((ord) => ord.product_id === Ispopdelete);
-  console.log(findoder);
+const PopDeleteOrder = ({ Ispopdelete, Closedelete }) => {
+  const { setcheckapi } = useContext(ListOderctx);
 
   const handleDelete = async () => {
-    if (findoder) {
-    
-      return;
-    }
-    const relust = await DeleteApiproduct(Ispopdelete);
-    if (relust) {
-      setcheck((pre) => !pre);
+    const result = await deleteApiorder(Ispopdelete);
+    if (result) {
+      setcheckapi(pre => !pre);
       Closedelete();
     }
   };
+
   if (!Ispopdelete) return null;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
         <h2 className="text-xl font-semibold text-red-600 mb-4">
-          Xác nhận 
+          Xác nhận
         </h2>
         <p className="text-gray-700">
-          Bạn có chắc chắn muốn xóa đơn hàng <strong>123</strong> không?
+          Bạn có chắc chắn muốn xóa đơn hàng này không?
         </p>
         <div className="flex justify-end gap-3 mt-5">
           <button
@@ -41,7 +33,7 @@ const PopDeleteprd = ({ Ispopdelete, Closedelete }) => {
           </button>
           <button
             onClick={() => handleDelete()}
-            className="bg-orange-600 text-white px-4 py-2 rounded-md"
+            className="bg-red-600 text-white px-4 py-2 rounded-md"
           >
             Xác nhận
           </button>
@@ -51,4 +43,4 @@ const PopDeleteprd = ({ Ispopdelete, Closedelete }) => {
   );
 };
 
-export default PopDeleteprd;
+export default PopDeleteOrder; 

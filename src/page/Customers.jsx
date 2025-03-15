@@ -68,7 +68,7 @@ const Customers = () => {
                   <p>{date}</p>
                 </div>
                 <div className="flex justify-center items-center gap-3">
-                  <FaPen /> <MdDelete color="red" />
+                  <FaPen />
                 </div>
               </>
             </div>

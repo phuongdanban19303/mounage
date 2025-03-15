@@ -84,3 +84,30 @@ export const DeleteApiproduct=async (id)=>{
     console.error(error);
   }
 }
+// Api update order
+export const putApiorder = async (id, value) => {
+  try {
+    const API_PUT_ORDER = `https://ngochieuwedding.io.vn/api/order/${id}`;
+    const repct = await fetch(API_PUT_ORDER, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+    return await repct.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+// Api delete order
+export const deleteApiorder = async (id) => {
+  try {
+    const API_DELETE_ORDER = `https://ngochieuwedding.io.vn/api/order/${id}`;
+    const repct = await fetch(API_DELETE_ORDER, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" }
+    });
+    return await repct.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
