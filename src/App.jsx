@@ -7,7 +7,6 @@ import Dashboar from "./page/Dashboar";
 import Login from "./page/Login";
 import Orders from "./page/Orders";
 import Products from "./page/Products";
-import Register from "./page/register";
 import UserRoles from "./page/UserRoles";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/ProtectedRoute";
@@ -19,7 +18,6 @@ function App() {
         <Listprdprovider>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
             <Route
               path="/"
               element={<ProtectedRoute element={<Dashboar />} />}
