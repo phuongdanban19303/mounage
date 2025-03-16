@@ -5,7 +5,7 @@ import { KEY_USER_successful } from "../untils/const";
 export const AuthContext = createContext();
 const issuccessful=()=>{
   const successful = localStorage.getItem(KEY_USER_successful);
-  return successful? JSON.parse(successful):null
+  return successful? JSON.parse(successful):true
 }
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(issuccessful());
