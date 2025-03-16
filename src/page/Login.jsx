@@ -6,19 +6,11 @@ import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
   const [loginData, setLoginData] = useState({
     username: '',
     password: ''
   });
 
-  const handleSubmit = () => {
-    // Giả lập đăng nhập thành công
-    if (loginData.username && loginData.password) {
-      login();
-      navigate('/');
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -71,7 +63,7 @@ const Login = () => {
           <button
             type="submit"
             className='w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors'
-            onClick={handleSubmit}
+            onClick={()=>login(loginData)}
           >
             Đăng nhập
           </button>
