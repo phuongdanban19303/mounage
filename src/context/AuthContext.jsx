@@ -5,7 +5,7 @@ import { KEY_USER_successful } from "../untils/const";
 export const AuthContext = createContext();
 const issuccessful=()=>{
   const successful = localStorage.getItem(KEY_USER_successful);
-  return successful? JSON.parse(successful):true
+  return successful? JSON.parse(successful):null
 }
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(issuccessful());
@@ -32,12 +32,12 @@ export const AuthProvider = ({ children }) => {
       fetchdetail()
     }
    
-  },[])
+  },[isAuthenticated])
 
   const login = (value) => {
     const finduser = Listuser?.find((item) => item.username === value.username);
-    if (finduser) {
-      setIsAuthenticated(true);
+    if (finduser) { 
+      setIsAuthenticated(finduser._id);
       localStorage.setItem(KEY_USER_successful,JSON.stringify(finduser?._id));
       navigate("/");
     }
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => setIsAuthenticated(null);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, login, logout,usersuccessful }}>
       {children}
     </AuthContext.Provider>
   );
