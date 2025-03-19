@@ -10,6 +10,7 @@ import Products from "./page/Products";
 import UserRoles from "./page/UserRoles";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./component/ProtectedRoute";
+import Register from "./page/Register";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Listprdprovider>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route
               path="/"
               element={<ProtectedRoute element={<Dashboar />} />}

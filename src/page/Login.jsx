@@ -5,15 +5,18 @@ import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Navbarmenu from "../component/Navbar";
 import Header from "../component/Header";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Login = () => {
   const { login, isAuthenticated, usersuccessful, logout } = useContext(AuthContext);
-  const navigate = useNavigate();
+  
   const [loginData, setLoginData] = useState({
-    username: "admin",
-    password: "123456",
+    username: "",
+    password: "",
   });
-
+ console.log(loginData);
+ 
   const handleLogout = () => {
     logout();
   };
@@ -34,6 +37,8 @@ const Login = () => {
       <div className="flex-1 bg-[#F9FAFB]">
         <div className="w-[1320px]">
           <Header />
+          <ToastContainer />
+
         </div>
         <main className="p-8">
           {isAuthenticated ? (
@@ -42,7 +47,7 @@ const Login = () => {
                 {/* Header Section */}
                 <div className="bg-blue-600 p-6 text-white">
                   <div className="flex items-center space-x-4">
-                    <div className=" flex items-center justify-center object-cover">
+                    <div className=" flex items-center justify-center">
                     <img className="w-20 h-20 rounded-full" src={usersuccessful?.avatar ? usersuccessful?.avatar:"https://icons.veryicon.com/png/o/miscellaneous/standard/avatar-15.png"} alt={`anh${usersuccessful?._id}`} />
                     </div>
                     <div>
@@ -146,7 +151,7 @@ const Login = () => {
                     <input
                       type="text"
                       name="username"
-                      value={"admin"}
+                      value={loginData.username}
                       onChange={handleChange}
                       placeholder="Tên đăng nhập"
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
@@ -159,7 +164,7 @@ const Login = () => {
                     <input
                       type="password"
                       name="password"
-                      value={"123456"}
+                      value={loginData.password}
                       onChange={handleChange}
                       placeholder="Mật khẩu"
                       className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
@@ -180,7 +185,9 @@ const Login = () => {
                   <button
                     type="submit"
                     className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition-colors"
-                    onClick={() => login(loginData)}
+                    onClick={() => {login(loginData);toast.error("❌ Đăng nhập thất bại, vui lòng kiểm tra lại!");
+                      ;
+                    }}
                   >
                     Đăng nhập
                   </button>

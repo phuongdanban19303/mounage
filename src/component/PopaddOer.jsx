@@ -6,8 +6,15 @@ import { Listprdctx } from "../context/ListprdContext";
 import Select from "react-select";
 
 const PopaddOer = ({ Ispop:check, ClosePop, editOrder = null }) => {
-  const [newOrder, setNewOrder] = useState({});
-  console.log("check",check);
+  const [newOrder, setNewOrder] = useState({
+    client_name: "",
+    address: "",
+    phone: "",
+    status: "Chưa thanh toán",
+    product_id: "",
+    quantity: ""
+  });
+  const [error, setError] = useState("");
   
   // context oder
   const {setcheckapi} = useContext(ListOderctx);
@@ -17,36 +24,75 @@ const PopaddOer = ({ Ispop:check, ClosePop, editOrder = null }) => {
   useEffect(() => {
     if (editOrder) {
       setNewOrder({
-        client_name: editOrder.client_name,
-        address: editOrder.address,
-        phone: editOrder.phone,
-        status: editOrder.status,
-        product_id: editOrder.product_id,
-        quantity: editOrder.quantity
+        client_name: editOrder.client_name || "",
+        address: editOrder.address || "",
+        phone: editOrder.phone || "",
+        status: editOrder.status || "Chưa thanh toán",
+        product_id: editOrder.product_id || "",
+        quantity: editOrder.quantity || ""
       });
     }
   }, [editOrder]);
 
   // Get value input nhập vào
   const GetvalueOder = (name, e) => {
+    setError("");
     setNewOrder((pre) => ({ ...pre, [name]: e }));
   };
 
-  // handle save order (create or update)
-  const handleSaveOrder = async () => {
-    let result;
-    if (editOrder) {
-      result = await putApiorder(editOrder._id, newOrder);
-    } else {
-      result = await postApioder(newOrder);
+  // Validate form
+  const validateForm = () => {
+    if (!newOrder.client_name) {
+      setError("Vui lòng nhập tên khách hàng");
+      return false;
     }
-    if (result) {
-      setcheckapi(pre=>!pre);
-      ClosePop();
+    if (!newOrder.phone) {
+      setError("Vui lòng nhập số điện thoại");
+      return false;
+    }
+    if (!newOrder.address) {
+      setError("Vui lòng nhập địa chỉ");
+      return false;
+    }
+    if (!newOrder.product_id) {
+      setError("Vui lòng chọn sản phẩm");
+      return false;
+    }
+    if (!newOrder.quantity || newOrder.quantity <= 0) {
+      setError("Vui lòng nhập số lượng hợp lệ");
+      return false;
+    }
+    return true;
+  };
+
+  // handle save order (create or update)
+  const handleSaveOrder = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      let result;
+      if (editOrder) {
+        result = await putApiorder(editOrder._id, newOrder);
+      } else {
+        result = await postApioder(newOrder);
+      }
+      
+      if (result) {
+        setcheckapi(pre => !pre);
+        ClosePop();
+      } else {
+        setError("Có lỗi xảy ra khi lưu đơn hàng");
+      }
+    } catch (err) {
+      setError("Có lỗi xảy ra: " + err.message);
     }
   };
   
-  // slect
+  // select options
   const options = Products?.map((prd) => ({
     value: prd?._id,
     label: prd?.name,
@@ -57,114 +103,134 @@ const PopaddOer = ({ Ispop:check, ClosePop, editOrder = null }) => {
   return (
     <>
       {check && (
-        <div className="fixed inset-0  bg-black/50 flex  justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 flex justify-center z-50">
           <div className="w-[800px] h-[650px] mt-4 bg-white shadow-lg relative">
             <div className="flex gap-1.5 p-5">
-              <IoMdArrowRoundBack onClick={() => ClosePop()} size={20} />{" "}
+              <IoMdArrowRoundBack onClick={() => ClosePop()} size={20} />
               <p className="font-bold">{editOrder ? "Cập nhật đơn hàng" : "Thêm mới đơn hàng"}</p>
-              <div className="flex justify-end absolute top-2 right-2.5">
-                <button
-                  onClick={() => handleSaveOrder()}
-                  className="bg-[#F68C20] text-[#ffff] p-[6px] px-4 rounded-sm shadow-2xs mt-[16px]"
-                >
-                  {editOrder ? "Cập nhật" : "Lưu"}
-                </button>
-              </div>
             </div>
-            <div>
-              <p className=" pl-10 italic">
-                <span className="text-red-700">*</span> Thông tin khách hàng{" "}
-              </p>
-              <div className="flex justify-around mt-2">
-                <div>
-                  <div>
-                    <p>Khách hàng </p>
-                    <input
-                      onChange={(e) =>
-                        GetvalueOder("client_name", e.target.value)
-                      }
-                      value={newOrder.client_name || ""}
-                      className="w-[249px] border-1 border-gray-300 rounded-sm"
-                      type="text"
-                    />
-                  </div>
-                  <div>
-                    <p>Địa chỉ </p>
-                    <input
-                      className="w-[249px] border-1 border-gray-300 rounded-sm"
-                      type="text"
-                      value={newOrder.address || ""}
-                      onChange={(e) => GetvalueOder("address", e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div>
-                  <div>
-                    <p>Số điện thoại </p>
-                    <input
-                      className="w-[249px] border-1 border-gray-300 rounded-sm"
-                      type="text"
-                      value={newOrder.phone || ""}
-                      onChange={(e) => GetvalueOder("phone", e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <p>Trạng thái đơn hàng </p>
-                    <select 
-                      className="w-[249px] py-1 border-1 border-gray-300 rounded-sm"
-                      value={newOrder.status || ""}
-                      onChange={(e) => GetvalueOder("status", e.target.value)}
-                    >
-                      <option value="Chưa thanh toán">Chưa thanh toán</option>
-                      <option value="Đã thanh toán">Đã thanh toán</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <p className=" pl-10 italic mt-2">
-                <span className="text-red-700">*</span> Thông tin đơn hàng
-              </p>
 
-              <div className="flex justify-around m-2 mb-12">
-                <div className="w-[30%] mr-10">
+            <form onSubmit={handleSaveOrder}>
+              {error && (
+                <div className="text-red-500 text-center mb-4">{error}</div>
+              )}
+
+              <div>
+                <p className="pl-10 italic">
+                  <span className="text-red-700">*</span> Thông tin khách hàng
+                </p>
+                <div className="flex justify-around mt-2">
                   <div>
-                    <p>Sản phẩm</p>
-                    <Select
-                      options={options}
-                      placeholder="Chọn sản phẩm..."
-                      isSearchable={true}
-                      value={options.find(opt => opt.value === newOrder.product_id)}
-                      styles={{
-                        control: (base) => ({
-                          ...base,
-                          width: "249px",
-                          border: "1px solid #d1d5db",
-                          borderRadius: "0.125rem",
-                        }),
-                      }}
-                      onChange={
-                        (selectedOption) =>
-                          GetvalueOder("product_id", selectedOption?.value)
-                      }
-                    />
+                    <div>
+                      <p>Khách hàng <span className="text-red-500">*</span></p>
+                      <input
+                        onChange={(e) => GetvalueOder("client_name", e.target.value)}
+                        value={newOrder.client_name}
+                        className="w-[249px] border-1 border-gray-300 rounded-sm p-1"
+                        type="text"
+                        
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <p>Địa chỉ <span className="text-red-500">*</span></p>
+                      <input
+                        className="w-[249px] border-1 border-gray-300 rounded-sm p-1"
+                        type="text"
+                        value={newOrder.address}
+                        onChange={(e) => GetvalueOder("address", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="mt-2.5">
-                    <p>Số lượng</p>
-                    <input
-                      className="w-[249px] border-1 border-gray-300 rounded-sm"
-                      type="number"
-                      value={newOrder.quantity || ""}
-                      onChange={(e) => GetvalueOder("quantity", e.target.value)}
-                    />
+                  <div>
+                    <div>
+                      <p>Số điện thoại <span className="text-red-500">*</span></p>
+                      <input
+                        className="w-[249px] border-1 border-gray-300 rounded-sm p-1"
+                        type="text"
+                        value={newOrder.phone}
+                        onChange={(e) => GetvalueOder("phone", e.target.value)}
+                        
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <p>Trạng thái đơn hàng</p>
+                      <select 
+                        className="w-[249px] py-1 border-1 border-gray-300 rounded-sm"
+                        value={newOrder.status}
+                        onChange={(e) => GetvalueOder("status", e.target.value)}
+                      >
+                        <option value="Chưa thanh toán">Chưa thanh toán</option>
+                        <option value="Đã thanh toán">Đã thanh toán</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
-                <div className="w-[30%] mr-5">
-                  <div>
-                    <p> Thành tiền: {selectedProduct ? (selectedProduct.price * (newOrder.quantity || 0)).toLocaleString("vi-VN") : 0} đ</p>
+
+                <p className="pl-10 italic mt-6">
+                  <span className="text-red-700">*</span> Thông tin đơn hàng
+                </p>
+
+                <div className="flex justify-around m-2 mb-12">
+                  <div className="w-[30%] mr-10">
+                    <div>
+                      <p>Sản phẩm <span className="text-red-500">*</span></p>
+                      <Select
+                        options={options}
+                        placeholder="Chọn sản phẩm..."
+                        isSearchable={true}
+                        value={options.find(opt => opt.value === newOrder.product_id)}
+                        styles={{
+                          control: (base) => ({
+                            ...base,
+                            width: "249px",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "0.125rem",
+                          }),
+                        }}
+                        onChange={(selectedOption) =>
+                          GetvalueOder("product_id", selectedOption?.value)
+                        }
+                      />
+                    </div>
+                    <div className="mt-4">
+                      <p>Số lượng <span className="text-red-500">*</span></p>
+                      <input
+                        className="w-[249px] border-1 border-gray-300 rounded-sm p-1"
+                        type="number"
+                        min="1"
+                        value={newOrder.quantity}
+                        onChange={(e) => GetvalueOder("quantity", e.target.value)}
+                        required
+                      />
+                    </div>
                   </div>
+                  <div className="w-[30%] mr-5">
+                    <div>
+                      <p className="font-semibold">Thành tiền:</p>
+                      <p className="text-xl text-blue-600 font-bold mt-2">
+                        {selectedProduct ? (selectedProduct.price * (newOrder.quantity || 0)).toLocaleString("vi-VN") : 0} đ
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="absolute bottom-4 right-4">
+                  <button
+                    type="button"
+                    onClick={ClosePop}
+                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg mr-2 hover:bg-gray-200"
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  >
+                    {editOrder ? "Cập nhật" : "Lưu"}
+                  </button>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       )}

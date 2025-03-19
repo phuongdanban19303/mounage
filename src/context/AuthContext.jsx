@@ -11,7 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(issuccessful());
   const [Listuser, Setlistuser] = useState([]);
   const [usersuccessful, Setusersuccessful] = useState({});
+  const [checklogin,setchecklogin]=useState(true)
   console.log(usersuccessful);
+  
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -20,7 +22,7 @@ export const AuthProvider = ({ children }) => {
       Setlistuser(user?.data);
     };
     fetchuser();
-  }, []);
+  }, [checklogin]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -47,6 +49,7 @@ export const AuthProvider = ({ children }) => {
       navigate("/");
     }
   };
+////
 
   const logout = () => {
     console.log("2112");
@@ -57,7 +60,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, login, logout, usersuccessful }}
+      value={{ isAuthenticated, login, logout, usersuccessful,setchecklogin}}
     >
       {children}
     </AuthContext.Provider>

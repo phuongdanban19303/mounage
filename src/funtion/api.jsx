@@ -1,5 +1,6 @@
 const API_ODER = "https://ngochieuwedding.io.vn/api/order";
 const API_PRODUCT = "https://ngochieuwedding.io.vn/api/phuong/product";
+const API_USER = "https://ngochieuwedding.io.vn/api/user";
 export const getApioder = async () => {
   try {
     const repct = await fetch(API_ODER);
@@ -116,14 +117,31 @@ export const GetApiuser = async () => {
     const repct = await fetch("https://ngochieuwedding.io.vn/api/user");
     const data = await repct.json();
     return data;
-  } catch (error) {console.error(error)}
+  } catch (error) {
+    console.error(error);
+  }
 };
-// API user getdetail 
+// API user getdetail
 export const GetApiuserdetail = async (id) => {
   try {
-    const API_userdetail= `https://ngochieuwedding.io.vn/api/user/${id}`
-    const repct = await fetch( API_userdetail);
+    const API_userdetail = `https://ngochieuwedding.io.vn/api/user/${id}`;
+    const repct = await fetch(API_userdetail);
     const data = await repct.json();
     return data;
-  } catch (error) {console.error(error)}
+  } catch (error) {
+    console.error(error);
+  }
+};
+// API post user
+export const Postapiuser = async (value) => {
+  try {
+    const repct = await fetch(API_USER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+    return await repct.json();
+  } catch (error) {
+    console.error(error);
+  }
 };

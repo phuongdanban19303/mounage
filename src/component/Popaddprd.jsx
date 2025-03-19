@@ -6,8 +6,9 @@ import { postApiprd, putApiproduct } from "../funtion/api";
 const Popaddprd = ({ Ispopdr, Closepoprd }) => {
   
   // context
-  const { setcheck,getPrdnew,Newprd} = useContext(Listprdctx);
+  const { setcheck,getPrdnew,Newprd,Setproducts,Products} = useContext(Listprdctx);
   //Update APi
+  
   const handleupdate=async()=>{
     
       const data= await putApiproduct(Newprd?._id,{
@@ -27,11 +28,16 @@ const Popaddprd = ({ Ispopdr, Closepoprd }) => {
   // handelcreatPrd
   const handlecreatPrd = async () => {
     const result = await postApiprd(Newprd);
+    console.log(result);
+    
     if (result) {
-      setcheck((pre) => !pre);
+      setcheck(pre =>!pre);
+      // Setproducts((prev) => [...prev,Newprd]),
       Closepoprd();
     }
   };
+  console.log("ninh",Products);
+  
   //
   const handleFileupload = async (event) => {
     const file = event.target.files[0];
