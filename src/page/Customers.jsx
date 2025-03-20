@@ -11,6 +11,8 @@ import { toast } from "react-hot-toast";
 
 const Customers = () => {
   const [error, setError] = useState("");
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
 
   const Inputfind = () => {
     return (
@@ -112,7 +114,21 @@ const Customers = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitError("");
+    setSubmitSuccess("");
     try {
+      if (!registerData.username || !registerData.password || !registerData.fullName || !registerData.comfrimpassword) {
+        setSubmitError("Vui lòng điền đầy đủ thông tin!");
+        return;
+      }
+      if (registerData.password.length < 8) {
+        setSubmitError("Mật khẩu không đủ bảo mật, vui lòng nhập lại");
+        return;
+      }
+      if (registerData.password !== registerData.comfrimpassword) {
+        setSubmitError("Mật khẩu xác nhận không khớp!");
+        return;
+      }
       const result = await login(loginData);
       if (result) {
         setTimeout(() => {

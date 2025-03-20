@@ -30,7 +30,7 @@ const Register = () => {
     }));
 
     // Reset error messages when user types
-    // setSubmitError("");
+    setSubmitError("");
     setSubmitSuccess("");
     // setusernameError("");
     if (name === "username"&& Listuser) {
@@ -71,7 +71,7 @@ const Register = () => {
       setSubmitError("Vui lòng chọn tên đăng nhập khác");
       return;
     }
-    if (registerData.password<8) {
+    if (registerData.password.length<8) {
       setSubmitError("Mật khẩu không đủ bảo mật, vui lòng nhập lại");
       return;
     }
