@@ -67,7 +67,7 @@ const Register = () => {
   };
 
   const postapiuser = async () => {
-    if (!registerData.username || !registerData.password || !registerData.confirmPassword || !registerData.fullName) {
+    if (!registerData.username || !registerData.password || !registerData.comfrimpassword || !registerData.fullName) {
       setSubmitError("Vui lòng điền đầy đủ thông tin!");
       return;
     }
@@ -82,7 +82,7 @@ const Register = () => {
       return;
     }
 
-    if (registerData.password !== registerData.confirmPassword) {
+    if (registerData.password !== registerData.comfrimpassword) {
       setSubmitError("Vui lòng nhập lại mật khẩu xác nhận !");
       return;
     }
