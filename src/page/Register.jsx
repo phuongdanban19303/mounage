@@ -67,22 +67,29 @@ const Register = () => {
   };
 
   const postapiuser = async () => {
-    if (usernameError) {
-      setSubmitError("Vui lòng chọn tên đăng nhập khác");
+    if (!registerData.username || !registerData.password || !registerData.confirmPassword || !registerData.fullName) {
+      setSubmitError("Vui lòng điền đầy đủ thông tin!");
       return;
     }
-    if (registerData.password.length<8) {
+
+    if (Listuser?.some((user) => user.username === registerData.username)) {
+      setSubmitError("Tên đăng nhập đã tồn tại, vui lòng chọn tên khác!");
+      return;
+    }
+
+    if (registerData.password.length < 8) {
       setSubmitError("Mật khẩu không đủ bảo mật, vui lòng nhập lại");
       return;
     }
-    if (registerData.comfrimpassword !== registerData.comfrimpassword) {
+
+    if (registerData.password !== registerData.confirmPassword) {
       setSubmitError("Vui lòng nhập lại mật khẩu xác nhận !");
       return;
     }
 
     try {
-      const repct = await Postapiuser(registerData);
-      if (repct) {
+      const response = await Postapiuser(registerData);
+      if (response) {
         setSubmitSuccess("Đăng ký thành công! Đang chuyển hướng...");
         setTimeout(() => {
           setchecklogin((pre) => !pre);
@@ -92,7 +99,8 @@ const Register = () => {
     } catch (error) {
       setSubmitError("Có lỗi xảy ra khi đăng ký!");
     }
-  };
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
