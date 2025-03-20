@@ -1,9 +1,5 @@
 import React, { useContext, useState } from "react";
-import {
-  FaLock,
-  FaUser,
-  FaUserCircle
-} from "react-icons/fa";
+import { FaLock, FaUser, FaUserCircle } from "react-icons/fa";
 import Header from "../component/Header";
 import Navbarmenu from "../component/Navbar";
 import { Postapiuser } from "../funtion/api";
@@ -16,13 +12,15 @@ const Register = () => {
     username: "",
     password: "",
     fullName: "",
-    comfrimpassword: ""
+    comfrimpassword: "",
   });
   const [passwordError, setPasswordError] = useState("");
+  const [usernameError, setusernameError] = useState("");
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
 
-  const {setchecklogin} = useContext(AuthContext);
+  const { setchecklogin, Listuser } = useContext(AuthContext);
+  console.log("aa", Listuser);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -32,31 +30,53 @@ const Register = () => {
     }));
 
     // Reset error messages when user types
-    setSubmitError("");
+    // setSubmitError("");
     setSubmitSuccess("");
+    // setusernameError("");
+    if (name === "username"&& Listuser) {
+      const findusername = Listuser.find((user) => user?.username===value);
+      if (findusername) {
+        setusernameError("Tên đăng nhập đã tồn tại")
+      }
+      else{
+        setusernameError("")
+      }
+    }
 
-    // Kiểm tra mật khẩu xác nhận khi người dùng nhập
-    if (name === "comfrimpassword") {
-      if (value !== registerData.password) {
-        setPasswordError("Mật khẩu xác nhận không khớp!");
+    // Kiểm tra mật khẩu khi người dùng nhập
+    if (name === "password") {
+      if (value.length < 8) {
+        setPasswordError("Mật khẩu phải có ít nhất 8 ký tự");
+      } else if (registerData.comfrimpassword && value !== registerData.comfrimpassword) {
+        setPasswordError("Mật khẩu xác nhận không khớp");
       } else {
         setPasswordError("");
       }
     }
-    
-    // Kiểm tra lại mật khẩu xác nhận khi mật khẩu chính thay đổi
-    if (name === "password" && registerData.comfrimpassword) {
-      if (value !== registerData.comfrimpassword) {
-        setPasswordError("Mật khẩu xác nhận không khớp!");
+
+    // Kiểm tra mật khẩu xác nhận khi người dùng nhập
+    if (name === "comfrimpassword") {
+      if (value !== registerData.password) {
+        setPasswordError("Mật khẩu xác nhận không khớp");
+      } else if (registerData.password.length < 8) {
+        setPasswordError("Mật khẩu phải có ít nhất 8 ký tự");
       } else {
         setPasswordError("");
       }
     }
   };
-    
+
   const postapiuser = async () => {
-    if (registerData.password !== registerData.comfrimpassword) {
-      setSubmitError("Mật khẩu xác nhận không khớp!");
+    if (usernameError) {
+      setSubmitError("Vui lòng chọn tên đăng nhập khác");
+      return;
+    }
+    if (registerData.password<8) {
+      setSubmitError("Mật khẩu không đủ bảo mật, vui lòng nhập lại");
+      return;
+    }
+    if (registerData.comfrimpassword !== registerData.comfrimpassword) {
+      setSubmitError("Vui lòng nhập lại mật khẩu xác nhận !");
       return;
     }
 
@@ -65,9 +85,9 @@ const Register = () => {
       if (repct) {
         setSubmitSuccess("Đăng ký thành công! Đang chuyển hướng...");
         setTimeout(() => {
-          setchecklogin(pre => !pre);
+          setchecklogin((pre) => !pre);
           navigate("/login");
-        }, 3000);
+        }, 2000);
       }
     } catch (error) {
       setSubmitError("Có lỗi xảy ra khi đăng ký!");
@@ -121,6 +141,7 @@ const Register = () => {
                     required
                   />
                 </div>
+                {usernameError&& <p className="text-red-500 text-sm mb-1">{usernameError}</p>}
                 {/* Username */}
                 <div className="relative">
                   <FaUser className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -159,7 +180,7 @@ const Register = () => {
                     onChange={handleChange}
                     placeholder="Xác nhận lại mật khẩu"
                     className={`w-full pl-10 pr-4 py-2 border ${
-                      passwordError ? 'border-red-500' : 'border-gray-300'
+                      passwordError ? "border-red-500" : "border-gray-300"
                     } rounded-lg focus:outline-none focus:border-blue-500`}
                     required
                   />
@@ -167,8 +188,6 @@ const Register = () => {
                     <p className="text-red-500 text-sm mt-1">{passwordError}</p>
                   )}
                 </div>
-
-                
 
                 <button
                   type="submit"
