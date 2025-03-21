@@ -7,11 +7,13 @@ import Navbarmenu from "../component/Navbar";
 import ListOderprovider from "../context/ListOderContext";
 import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
 import Popprovideroder, { Popctxoder } from "../context/PopupContext";
+import { AuthContext } from "../context/AuthContext";
 
 // trường tìm kiếm sản phẩm
 const Inputfind = () => {
   const { Openpoprd } = useContext(Popctxoder);
   const { Products,setNewprd } = useContext(Listprdctx);
+  const {usersuccessful}=useContext(AuthContext)
 
   return (
     <>
@@ -34,12 +36,12 @@ const Inputfind = () => {
         </div>
       </div>
       <div className="flex justify-end">
-        <button
+      {usersuccessful.role==="admin"&&<button
           onClick={() => {Openpoprd(),setNewprd({})}}
           className="bg-[#F68C20] text-[#ffff] p-[10px] rounded-sm shadow-2xs mt-[16px]"
         >
           Thêm mới
-        </button>
+        </button>}
       </div>
     </>
   );
@@ -48,6 +50,7 @@ const Inputfind = () => {
 const Renderlist = () => {
   const { Products,setNewprd } = useContext(Listprdctx);
   const { Openpoprd ,Opendelete} = useContext(Popctxoder);
+const {usersuccessful}=useContext(AuthContext)
 
   const renderListprd = () => {
     return Products?.map((prd) => {
@@ -72,7 +75,7 @@ const Renderlist = () => {
           <td className="px-4 py-2 text-center">{prd?.stock}</td>
           <td className="px-4 py-2 text-center">{date}</td>
           <td className="px-4 py-7 text-center flex justify-center items-center gap-3 ">
-            <FaPen onClick={()=>{Openpoprd(),setNewprd({...prd,update:true})}} /> <MdDelete onClick={()=>Opendelete(prd?._id)} color="red" />
+           { usersuccessful.role==="admin" &&<><FaPen onClick={()=>{Openpoprd(),setNewprd({...prd,update:true})}} /> <MdDelete onClick={()=>Opendelete(prd?._id)} color="red" /></>}
           </td>
         </tr>
       );

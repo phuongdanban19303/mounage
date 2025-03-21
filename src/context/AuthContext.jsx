@@ -8,7 +8,7 @@ const issuccessful = () => {
   return successful ? JSON.parse(successful) : null;
 };
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(issuccessful());
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [Listuser, Setlistuser] = useState([]);
   const [usersuccessful, Setusersuccessful] = useState({});
   const [checklogin,setchecklogin]=useState(true)

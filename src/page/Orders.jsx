@@ -54,6 +54,7 @@ const Btnadd = () => {
 const Renderoder = ({Products}) => {
   const {Opendetail, Openpop, OpendeleteOrder} = useContext(Popctxoder);
   const { orders } = useContext(ListOderctx);
+  const{usersuccessful}=useContext(AuthContext)
 
   // Hàm display đơn hàng
   const disPlayorders = () => {
@@ -92,8 +93,8 @@ const Renderoder = ({Products}) => {
               <p>{date}</p>
             </div>
             <div className="flex justify-center items-center gap-3">
-              <FaPen onClick={() => Openpop(odr)} /> 
-              <MdDelete onClick={() => OpendeleteOrder(odr?._id)} color="red" /> 
+             {usersuccessful.role==="admin" && <> <FaPen onClick={() => Openpop(odr)} /> 
+              <MdDelete onClick={() => OpendeleteOrder(odr?._id)} color="red" /> </>}
               <IoEye onClick={()=>Opendetail(odr?._id)} color="blue"/>
             </div>
           </>
