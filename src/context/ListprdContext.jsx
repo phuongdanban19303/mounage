@@ -6,6 +6,7 @@ const Listprdprovider = ({children}) => {
   const[check,setcheck]=useState(true);
   //
   const [Newprd, setNewprd] = useState({});
+  const [filteredProducts, setFilteredProducts] = useState(null);
   
   // getvalue
   const getPrdnew = (name, e) => {
@@ -18,7 +19,16 @@ const Listprdprovider = ({children}) => {
      }
      fetchprodcut();
   },[check])
-  return <Listprdctx.Provider value={{Products,Setproducts,setcheck,getPrdnew,Newprd,setNewprd}}>
+  return <Listprdctx.Provider value={{
+    Products,
+    Setproducts,
+    setcheck,
+    getPrdnew,
+    Newprd,
+    setNewprd,
+    filteredProducts,
+    setFilteredProducts
+  }}>
      {children}
   </Listprdctx.Provider>;
 };
