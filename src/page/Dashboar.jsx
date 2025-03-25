@@ -6,7 +6,7 @@ import Navbarmenu from "../component/Navbar";
 import ListOderprovider, { ListOderctx } from "../context/ListOderContext";
 import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
 import TopProductChart from "../component/TopPrdchart";
-///
+
 const Displaychart = () => {
   const { orders } = useContext(ListOderctx);
   const { Products } = useContext(Listprdctx);
@@ -63,7 +63,6 @@ const Displaychart = () => {
     setChartData(processdatatotall(orders, filter, Products));
   }, [filter, Products, orders]);
 
-
   return (
     <div>
       <div className="p-4 rounded-lg">
@@ -72,7 +71,6 @@ const Displaychart = () => {
           {filter === "day" ? "ngày" : filter === "month" ? "tháng" : "năm"}
         </h2>
 
-        {/* Bộ lọc chọn ngày/tháng/năm */}
         <div className="mb-4">
           <label className="mr-2 font-semibold">Hiển thị theo:</label>
           <select
@@ -86,7 +84,6 @@ const Displaychart = () => {
           </select>
         </div>
 
-        {/* Biểu đồ doanh thu */}
         {chartData && (
           <Chart
             chartType="ColumnChart"

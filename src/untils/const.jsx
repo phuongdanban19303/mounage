@@ -11,7 +11,7 @@ export const Objectmenu = [
   { icon: <CiGrid41 />, title: "Tổng quan",linkto:"/" },
   { icon: <HiOutlineUsers />, title: "Khách hàng",linkto:"/customers" },
   { icon: <PiPackageThin />, title: "Sản phẩm",linkto:"/products" },
-  { icon: <CiBoxList />, title: "Danh mục",linkto:"/categories" },
+  // { icon: <CiBoxList />, title: "Danh mục",linkto:"/categories" },
   { icon: <MdBookmarkBorder />, title: "Đơn hàng",linkto:"/orders" },
   { icon: <FiUser/>, title: "Tài khoản",linkto:"/login" },
   { icon: <MdOutlineManageAccounts />, title: "Quản lý",linkto:"/roles" },

@@ -1,9 +1,11 @@
 const API_ODER = "https://ngochieuwedding.io.vn/api/order";
 const API_PRODUCT = "https://ngochieuwedding.io.vn/api/phuong/product";
 const API_USER = "https://ngochieuwedding.io.vn/api/user";
+
+const API_URL = "https://ngochieuwedding.io.vn/api";
 export const getApioder = async () => {
   try {
-    const repct = await fetch(API_ODER);
+    const repct = await fetch(`${API_URL}/order`);
     const data = await repct.json();
     return data;
   } catch (error) {
@@ -139,6 +141,34 @@ export const Postapiuser = async (value) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(value),
+    });
+    return await repct.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+// api update prd
+export const putApiuser = async (id, value) => {
+  try {
+    const API_PUT_PRD = `https://ngochieuwedding.io.vn/api/user/${id}`;
+    const repct = await fetch(API_PUT_PRD, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(value),
+    });
+    return await repct.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+//
+// Api delete order
+export const deleteApiuser = async (id) => {
+  try {
+    const API_DELETE_ORDER =`https://ngochieuwedding.io.vn/api/user/${id}`;
+    const repct = await fetch(API_DELETE_ORDER, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
     });
     return await repct.json();
   } catch (error) {

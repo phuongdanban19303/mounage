@@ -8,12 +8,24 @@ import ListOderprovider from "../context/ListOderContext";
 import Listprdprovider, { Listprdctx } from "../context/ListprdContext";
 import Popprovideroder, { Popctxoder } from "../context/PopupContext";
 import { AuthContext } from "../context/AuthContext";
+import { CgSpinner } from "react-icons/cg"; // Thêm vào phần import
 
 // trường tìm kiếm sản phẩm
 const Inputfind = () => {
   const { Openpoprd } = useContext(Popctxoder);
-  const { Products, setNewprd, setFilteredProducts } = useContext(Listprdctx);
+  const { Products, setNewprd, setFilteredProducts, filteredProducts } = useContext(Listprdctx);
   const { usersuccessful } = useContext(AuthContext);
+  const [sortType, setSortType] = useState("date-desc"); // Mặc định sắp xếp theo ngày mới nhất
+
+  // Sắp xếp mặc định khi component mount
+  React.useEffect(() => {
+    if (Products?.length) {
+      const sortedByDate = [...Products].sort((a, b) => 
+        new Date(b.createdAt) - new Date(a.createdAt)
+      );
+      setFilteredProducts(sortedByDate);
+    }
+  }, [Products]);
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value.toLowerCase();
@@ -28,26 +40,65 @@ const Inputfind = () => {
     setFilteredProducts(filtered);
   };
 
+  const handleSort = (e) => {
+    const value = e.target.value;
+    setSortType(value);
+    
+    let productsToSort = [...Products];
+    
+    switch(value) {
+      case "date-desc":
+        productsToSort.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        break;
+      case "date-asc":
+        productsToSort.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+        break;
+      case "price-desc":
+        productsToSort.sort((a, b) => b.price - a.price);
+        break;
+      case "price-asc":
+        productsToSort.sort((a, b) => a.price - b.price);
+        break;
+      case "stock-desc":
+        productsToSort.sort((a, b) => b.stock - a.stock);
+        break;
+      case "stock-asc":
+        productsToSort.sort((a, b) => a.stock - b.stock);
+        break;
+      default:
+        setFilteredProducts(null);
+        return;
+    }
+    
+    setFilteredProducts(productsToSort);
+  };
+
   return (
     <>
       <div className="flex h-[44px] justify-around">
         <input
           type="text"
-          className="w-[294px] border-1 border-gray-300 rounded-sm"
+          className="w-[294px] border-1 border-gray-300 rounded-sm px-2"
           placeholder="Nhập mã hoặc tên sản phẩm"
           onChange={handleSearch}
         />
-        <select className="w-[249px] border-1 border-gray-300 rounded-sm">
-          <option value="">Danh mục sản phẩm</option>
+        <select 
+          className="w-[249px] border-1 border-gray-300 rounded-sm px-2"
+          value={sortType}
+          onChange={handleSort}
+        >
+          <option value="date-desc">Ngày tạo mới nhất ↓</option>
+          <option value="date-asc">Ngày tạo cũ nhất ↑</option>
+          <option value="price-desc">Giá từ cao đến thấp ↓</option>
+          <option value="price-asc">Giá từ thấp đến cao ↑</option>
+          <option value="stock-desc">Số lượng từ nhiều đến ít ↓</option>
+          <option value="stock-asc">Số lượng từ ít đến nhiều ↑</option>
         </select>
-        <select className="w-[249px] border-1 border-gray-300 rounded-sm">
-          <option value="">Lọc theo giá trị</option>
-        </select>
-        <div className="w-[320px] flex items-center border-1 border-gray-300 rounded-sm pl-2.5">
+        {/* <div className="w-[320px] flex items-center border-1 border-gray-300 rounded-sm pl-2.5">
           <input className="w-[40%] text-black/50" type="date" />
           <p className="px-1.5">đến</p>
           <input className="w-[40%] text-black/50" type="date" />
-        </div>
+        </div> */}
       </div>
       <div className="flex justify-end">
         {usersuccessful?.role === "admin" && (
@@ -67,9 +118,28 @@ const Inputfind = () => {
 };
 //=> cmpnent list sản phẩm
 const Renderlist = () => {
-  const { Products, setNewprd, filteredProducts } = useContext(Listprdctx);
+  const { Products, setNewprd, filteredProducts, loading } = useContext(Listprdctx);
   const { Openpoprd, Opendelete } = useContext(Popctxoder);
   const { usersuccessful } = useContext(AuthContext);
+
+  // Thêm component loading
+  if (loading) {
+    return (
+      <div className="m-4 bg-white p-4 rounded shadow flex items-center justify-center h-[400px]">
+        <CgSpinner className="animate-spin text-[#F68C20]" size={50} />
+        <span className="ml-2 text-gray-600">Đang tải dữ liệu...</span>
+      </div>
+    );
+  }
+
+  // Thêm trường hợp không có sản phẩm
+  if (!Products?.length) {
+    return (
+      <div className="m-4 bg-white p-4 rounded shadow flex items-center justify-center h-[400px]">
+        <span className="text-gray-600">Không có sản phẩm nào</span>
+      </div>
+    );
+  }
 
   const renderListprd = () => {
     const productsToRender = filteredProducts || Products;

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import Header from "../component/Header";
 import Navbarmenu from "../component/Navbar";
 import { CiGrid41 } from "react-icons/ci";
@@ -6,7 +6,7 @@ import { FaPen, FaTrash } from "react-icons/fa";
 import { AuthContext } from "../context/AuthContext";
 
 const UserRoles = () => {
-  const { Listuser, usersuccessful } = useContext(AuthContext);
+  const { Listuser, setListuser, usersuccessful, token } = useContext(AuthContext);
   const [selectedRole, setSelectedRole] = useState("");
   const [editUserId, setEditUserId] = useState(null);
   const [error, setError] = useState("");
@@ -14,26 +14,87 @@ const UserRoles = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
 
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch("https://ngochieuwedding.io.vn/api/users", {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+        });
+        if (!response.ok) throw new Error("Không thể tải danh sách user");
+        const users = await response.json();
+        setListuser(users);
+      } catch (error) {
+        setError(error.message);
+        setTimeout(() => setError(""), 3000);
+      }
+    };
+    if (usersuccessful?.role === "admin") fetchUsers();
+  }, [usersuccessful, token, setListuser]);
+
   const handleRoleChange = async (userId, newRole) => {
+    console.log("userId:", userId);
+    if (!newRole || newRole === "") {
+      setError("Vui lòng chọn một quyền hợp lệ!");
+      setTimeout(() => setError(""), 3000);
+      return;
+    }
     try {
-      // TODO: Implement API call to update user role
+      const response = await fetch(`https://ngochieuwedding.io.vn/api/user/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Error response:", response.status, errorText);
+        const errorData = errorText ? JSON.parse(errorText) : {};
+        throw new Error(errorData.message || "User not found");
+      }
+
+      const updatedUser = await response.json();
+      setListuser((prev) =>
+        prev.map((user) => (user._id === userId ? { ...user, ...updatedUser } : user))
+      );
       setSuccess("Cập nhật quyền thành công!");
       setEditUserId(null);
+      setSelectedRole("");
       setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
-      setError("Có lỗi xảy ra khi cập nhật quyền!");
+      setError(error.message || "Có lỗi xảy ra khi cập nhật quyền!");
       setTimeout(() => setError(""), 3000);
     }
   };
 
   const handleDeleteUser = async (userId) => {
+    console.log("userId to delete:", userId);
     try {
-      // TODO: Implement API call to delete user
+      const response = await fetch(`https://ngochieuwedding.io.vn/api/user/${userId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log("Error response:", response.status, errorText);
+        const errorData = errorText ? JSON.parse(errorText) : {};
+        throw new Error(errorData.message || "User not found");
+      }
+
+      setListuser((prev) => prev.filter((user) => user._id !== userId));
       setSuccess("Xóa người dùng thành công!");
       setShowDeleteConfirm(false);
+      setUserToDelete(null);
       setTimeout(() => setSuccess(""), 3000);
     } catch (error) {
-      setError("Có lỗi xảy ra khi xóa người dùng!");
+      setError(error.message || "Có lỗi xảy ra khi xóa người dùng!");
       setTimeout(() => setError(""), 3000);
     }
   };
@@ -46,123 +107,6 @@ const UserRoles = () => {
   const cancelDelete = () => {
     setShowDeleteConfirm(false);
     setUserToDelete(null);
-  };
-
-  const Inputfind = () => {
-    return (
-      <div className="flex h-[44px] justify-around">
-        <input
-          type="text"
-          className="w-[314px] border-1 border-gray-300 rounded-sm px-1"
-          placeholder="Nhập tên người dùng cần tìm kiếm"
-        />
-        <select className="w-[249px] border-1 border-gray-300 rounded-sm">
-          <option value="">Tất cả quyền</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-          <option value="staff">Staff</option>
-        </select>
-      </div>
-    );
-  };
-
-  const RenderUsers = () => {
-    return (
-      <div>
-        <div className="grid grid-cols-6 gap-y-2 py-2.5 bg-[#E5E7EB] rounded-sm font-bold">
-          <div className="col-span-1 pl-1.5">
-            <p>STT</p>
-          </div>
-          <div>
-            <p>Họ và tên</p>
-          </div>
-          <div>
-            <p>Tên đăng nhập</p>
-          </div>
-          <div>
-            <p>Email</p>
-          </div>
-          <div>
-            <p>Quyền</p>
-          </div>
-          <div>
-            <p>Thao tác</p>
-          </div>
-        </div>
-
-        {Listuser?.map((user, index) => (
-          <div key={user._id} className="grid mt-2.5 grid-cols-6 gap-y-3 border-b-1 border-black/10">
-            <div className="pl-1.5">
-              <p>{index + 1}</p>
-            </div>
-            <div>
-              <p>{user.fullName}</p>
-            </div>
-            <div>
-              <p>{user.username}</p>
-            </div>
-            <div>
-              <p>{user.email}</p>
-            </div>
-            <div>
-              {editUserId === user._id ? (
-                <select
-                  value={selectedRole}
-                  onChange={(e) => setSelectedRole(e.target.value)}
-                  className="border border-gray-300 rounded-sm px-1"
-                >
-                  <option value="">Chọn quyền</option>
-                  <option value="admin">Admin</option>
-                  <option value="user">User</option>
-                  <option value="staff">Staff</option>
-                </select>
-              ) : (
-                <p className="capitalize">{user.role || "user"}</p>
-              )}
-            </div>
-            <div className="flex justify-center items-center gap-3">
-              {editUserId === user._id ? (
-                <>
-                  <button
-                    onClick={() => handleRoleChange(user._id, selectedRole)}
-                    className="text-green-600 hover:text-green-700"
-                  >
-                    Lưu
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditUserId(null);
-                      setSelectedRole("");
-                    }}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    Hủy
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => {
-                      setEditUserId(user._id);
-                      setSelectedRole(user.role || "user");
-                    }}
-                    className="text-blue-600 hover:text-blue-700"
-                  >
-                    <FaPen />
-                  </button>
-                  <button
-                    onClick={() => confirmDelete(user)}
-                    className="text-red-600 hover:text-red-700"
-                  >
-                    <FaTrash />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
   };
 
   return (
@@ -179,7 +123,6 @@ const UserRoles = () => {
                 <CiGrid41 size={30} />
                 <p className="text-[18px] font-bold">Quản lý người dùng</p>
               </div>
-              <Inputfind />
             </div>
             <div className="m-2.5 bg-white text-[15px] p-5 rounded-sm">
               {error && (
@@ -192,23 +135,94 @@ const UserRoles = () => {
                   {success}
                 </div>
               )}
-              <RenderUsers />
+              <div>
+                {Listuser?.map((user, index) => (
+                  <div
+                    key={user._id}
+                    className="grid mt-2.5 grid-cols-6 gap-y-3 border-b-1 border-black/10"
+                  >
+                    <div className="pl-1.5">
+                      <p>{index + 1}</p>
+                    </div>
+                    <div>
+                      <p>{user.fullName}</p>
+                    </div>
+                    <div>
+                      <p>{user.username}</p>
+                    </div>
+                    <div>
+                      <p>{user.email}</p>
+                    </div>
+                    <div>
+                      {editUserId === user._id ? (
+                        <select
+                          value={selectedRole}
+                          onChange={(e) => setSelectedRole(e.target.value)}
+                          className="border border-gray-300 rounded-sm px-1"
+                        >
+                          <option value="">Chọn quyền</option>
+                          <option value="admin">Admin</option>
+                          <option value="user">User</option>
+                          <option value="staff">Staff</option>
+                        </select>
+                      ) : (
+                        <p className="capitalize">{user.role || "user"}</p>
+                      )}
+                    </div>
+                    <div className="flex justify-center items-center gap-3">
+                      {editUserId === user._id ? (
+                        <>
+                          <button
+                            onClick={() => handleRoleChange(user._id, selectedRole)}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            Lưu
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditUserId(null);
+                              setSelectedRole("");
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            Hủy
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => {
+                              setEditUserId(user._id);
+                              setSelectedRole(user.role || "user");
+                            }}
+                            className="text-blue-600 hover:text-blue-700"
+                          >
+                            <FaPen />
+                          </button>
+                          <button
+                            onClick={() => confirmDelete(user)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <FaTrash />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         ) : (
-          <div className="flex items-center justify-center h-[calc(100vh-64px)]">
-            <p className="text-xl text-red-600">Bạn không có quyền truy cập vào trang này</p>
-          </div>
+          <p className="p-5">Bạn không có quyền truy cập vào trang này</p>
         )}
-
-        {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
             <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full">
               <h3 className="text-lg font-bold mb-4">Xác nhận xóa</h3>
               <p className="mb-4">
-                Bạn có chắc chắn muốn xóa người dùng {userToDelete?.fullName}?
-                Hành động này không thể hoàn tác.
+                Bạn có chắc chắn muốn xóa người dùng {userToDelete?.fullName}? Hành động này
+                không thể hoàn tác.
               </p>
               <div className="flex justify-end gap-3">
                 <button

@@ -5,18 +5,23 @@ import { ListOderctx } from "../context/ListOderContext";
 import { Listprdctx } from "../context/ListprdContext";
 
 const TopProductChart = () => {
-  const { orders } = useContext(ListOderctx);
+  const { orders, loading } = useContext(ListOderctx);
   const { Products } = useContext(Listprdctx);
   const [filter, setFilter] = useState("month");
   const [chartData, setChartData] = useState([["Product", "Revenue"]]);
- orders.fo
+
   // Date formatting functions
   const fromDay = (times) => new Date(times).toISOString().split("T")[0];
   const fromMonth = (times) => `${new Date(times).getFullYear()}-${new Date(times).getMonth() + 1}`;
   const fromYear = (times) => new Date(times).getFullYear().toString();
 
   // Process data for top products
-  const processTopProducts = ( filter) => {
+  const processTopProducts = (filter) => {
+    // Kiểm tra nếu orders hoặc Products không phải là mảng
+    if (!Array.isArray(orders) || !Array.isArray(Products)) {
+      return [];
+    }
+
     const productRevenue = {};
 
     orders.forEach((order) => {

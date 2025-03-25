@@ -35,19 +35,29 @@ export const AuthProvider = ({ children }) => {
   }, [isAuthenticated]);
 
   const login = (value) => {
-    console.log("hdassad");
-    
+    // Kiểm tra username tồn tại
+    const userExists = Listuser?.find(
+      (item) => item.username === value.username
+    );
+
+    if (!userExists) {
+      return { success: false, error: "Tên đăng nhập không tồn tại" };
+    }
+
+    // Kiểm tra password nếu username đúng
     const finduser = Listuser?.find(
       (item) =>
         item.username === value.username && item.password === value.password
     );
-    console.log(finduser);
 
-    if (finduser) {
-      setIsAuthenticated(finduser._id);
-      localStorage.setItem(KEY_USER_successful, JSON.stringify(finduser?._id));
-      navigate("/");
+    if (!finduser) {
+      return { success: false, error: "Mật khẩu không chính xác" };
     }
+
+    // Đăng nhập thành công
+    setIsAuthenticated(finduser._id);
+    localStorage.setItem(KEY_USER_successful, JSON.stringify(finduser?._id));
+    return { success: true };
   };
 ////
 
